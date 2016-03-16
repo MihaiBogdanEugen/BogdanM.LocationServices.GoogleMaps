@@ -21,7 +21,14 @@ namespace BogdanM.LocationServices.GoogleMaps
     {
         private const string DefaultBaseUrl = @"https://maps.google.com/maps/api/geocode/json?address=";
         private const string DefaultRouteUrl = @"https://maps.googleapis.com/maps/api/directions/json?origin={0},{1}&destination={2},{3}&avoid=highways&mode={4}&api_key={5}";
-        
+
+        /// <summary>
+        /// Default constructor for the GoogleMaps API Location Service
+        /// </summary>
+        /// <param name="apiKey">Api Key for allowing usage of the service.</param>
+        /// <param name="baseGeocodeUrl">Base format for the url for the geocoding operation.</param>
+        /// <param name="baseGeocodeReverseUrl">Base format for the url for the reverse geocoding operation.</param>
+        /// <param name="baseRouteUrl">Base format for the url for the routing operation.</param>
         public GoogleMapsService(string apiKey, string baseGeocodeUrl = GoogleMapsService.DefaultBaseUrl, string baseGeocodeReverseUrl = GoogleMapsService.DefaultBaseUrl, string baseRouteUrl = GoogleMapsService.DefaultRouteUrl)
             : base(apiKey, baseGeocodeUrl, baseGeocodeReverseUrl, baseRouteUrl) { }
 
