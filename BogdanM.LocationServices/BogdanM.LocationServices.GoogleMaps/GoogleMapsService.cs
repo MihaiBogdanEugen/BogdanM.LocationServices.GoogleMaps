@@ -37,7 +37,7 @@ namespace BogdanM.LocationServices.GoogleMaps
         /// </summary>
         /// <param name="address">The input address (street name and no, city and country) as an <see cref="Address"/> object.</param>
         /// <returns>The latitude and longitude of the given address as a <see cref="LatLng"/> structure.</returns>
-        public override  LatLng Geocode(Address address)
+        public override LatLng Geocode(Address address)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
