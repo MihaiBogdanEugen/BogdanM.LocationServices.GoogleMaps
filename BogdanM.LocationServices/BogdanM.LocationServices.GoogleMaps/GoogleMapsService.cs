@@ -17,49 +17,25 @@ namespace BogdanM.LocationServices.GoogleMaps
     /// Google Maps API wrapper implementation for basic location services operations like geocoding, reverse geocoding, routing and distance.
     /// Implements IDisposable only for allowing usage with Owin IdentityFactoryOptions creation.
     /// </summary>
-    public class GoogleMapsService : ILocationService
+    public class GoogleMapsService : BaseLocationService
     {
         private const string DefaultBaseUrl = @"https://maps.google.com/maps/api/geocode/json?address=";
-        private const string DefaultRouteUrl = @"https://maps.googleapis.com/maps/api/directions/json?origin={0},{1}&destination={2},{3}&avoid=highways&mode={4}";
-
-        private readonly string _apiKey;
-        private readonly string _baseGeocodeUrl;
-        private readonly string _baseGeocodeReverseUrl;
-        private readonly string _baseRouteUrl;
-
+        private const string DefaultRouteUrl = @"https://maps.googleapis.com/maps/api/directions/json?origin={0},{1}&destination={2},{3}&avoid=highways&mode={4}&api_key={5}";
+        
         public GoogleMapsService(string apiKey, string baseGeocodeUrl = GoogleMapsService.DefaultBaseUrl, string baseGeocodeReverseUrl = GoogleMapsService.DefaultBaseUrl, string baseRouteUrl = GoogleMapsService.DefaultRouteUrl)
-        {
-            if (string.IsNullOrEmpty(apiKey))
-                throw new ArgumentNullException(nameof(apiKey));
-
-            if (string.IsNullOrEmpty(baseGeocodeUrl))
-                throw new ArgumentNullException(nameof(baseGeocodeUrl));
-
-            if (string.IsNullOrEmpty(baseGeocodeReverseUrl))
-                throw new ArgumentNullException(nameof(baseGeocodeReverseUrl));
-
-            if (string.IsNullOrEmpty(baseRouteUrl))
-                throw new ArgumentNullException(nameof(baseRouteUrl));
-
-            this._apiKey = apiKey;
-            this._baseGeocodeUrl = baseGeocodeUrl;
-            this._baseGeocodeReverseUrl = baseGeocodeReverseUrl;
-            this._baseRouteUrl = baseRouteUrl;
-        }
-
+            : base(apiKey, baseGeocodeUrl, baseGeocodeReverseUrl, baseRouteUrl) { }
 
         /// <summary>
         /// Converts a human-readable address into geographic coordinates.
         /// </summary>
         /// <param name="address">The input address (street name and no, city and country) as an <see cref="Address"/> object.</param>
         /// <returns>The latitude and longitude of the given address as a <see cref="LatLng"/> structure.</returns>
-        public LatLng Geocode(Address address)
+        public override  LatLng Geocode(Address address)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
 
-            var url = $"{this._baseGeocodeUrl}{address}";
-            url += "&key=" + this._apiKey;
+            var url = $"{this.BaseGeocodeUrl}{address}&key={this.ApiKey}";
             url = HttpUtility.UrlPathEncode(url).Replace(" ", "%20");
             var request = WebRequest.CreateHttp(url);
             request.Method = "GET";
@@ -96,13 +72,12 @@ namespace BogdanM.LocationServices.GoogleMaps
         /// </summary>
         /// <param name="address">The input address (street name and no, city and country) as an <see cref="Address"/> object.</param>
         /// <returns>The latitude and longitude of the given address as a <see cref="Task" /> object.</returns>
-        public async Task<LatLng> GeocodeAsync(Address address)
+        public override async Task<LatLng> GeocodeAsync(Address address)
         {
             if (address == null)
                 throw new ArgumentNullException(nameof(address));
 
-            var url = $"{this._baseGeocodeUrl}{address}";
-            url += "&key=" + this._apiKey;
+            var url = $"{this.BaseGeocodeUrl}{address}&key={this.ApiKey}";
             url = HttpUtility.UrlPathEncode(url).Replace(" ", "%20");
             var request = WebRequest.CreateHttp(url);
             request.Method = "GET";
@@ -139,13 +114,12 @@ namespace BogdanM.LocationServices.GoogleMaps
         /// </summary>
         /// <param name="point">The input latitude and longitude as a <see cref="LatLng"/> structure.</param>
         /// <returns>The address (street name and no, city and country) as an <see cref="Address"/> object.</returns>
-        public Address ReverseGeocode(LatLng point)
+        public override Address ReverseGeocode(LatLng point)
         {
             var latAsString = point.Lat.ToString("###.###############");
             var lngAsString = point.Lng.ToString("###.###############");
 
-            var url = $"{this._baseGeocodeReverseUrl}{latAsString},{lngAsString}";
-            url += "&key=" + this._apiKey;
+            var url = $"{this.BaseGeocodeReverseUrl}{latAsString},{lngAsString}&key={this.ApiKey}";
             url = HttpUtility.UrlPathEncode(url).Replace(" ", "%20");
             var request = WebRequest.CreateHttp(url);
             request.Method = "GET";
@@ -189,13 +163,12 @@ namespace BogdanM.LocationServices.GoogleMaps
         /// </summary>
         /// <param name="point">The input latitude and longitude as a <see cref="LatLng"/> structure.</param>
         /// <returns>The address (street name and no, city and country) as a <see cref="Task" /> object.</returns>
-        public async Task<Address> ReverseGeocodeAsync(LatLng point)
+        public override async Task<Address> ReverseGeocodeAsync(LatLng point)
         {
             var latAsString = point.Lat.ToString("###.###############");
             var lngAsString = point.Lng.ToString("###.###############");
 
-            var url = $"{this._baseGeocodeReverseUrl}{latAsString},{lngAsString}";
-            url += "&key=" + this._apiKey;
+            var url = $"{this.BaseGeocodeReverseUrl}{latAsString},{lngAsString}&key={this.ApiKey}";
             url = HttpUtility.UrlPathEncode(url).Replace(" ", "%20");
             var request = WebRequest.CreateHttp(url);
             request.Method = "GET";
@@ -240,7 +213,7 @@ namespace BogdanM.LocationServices.GoogleMaps
         /// <param name="from">The first geographic point as a <see cref="LatLng"/> structure.</param>
         /// <param name="to">The second geographic point as a <see cref="LatLng"/> structure.</param>
         /// <returns>The distance in meters as an integer.</returns>
-        public int GetDistance(LatLng @from, LatLng to)
+        public override int GetDistance(LatLng @from, LatLng to)
         {
             return this.GetGoogleMapsDistanceInMeters(@from, to);
         }
@@ -251,7 +224,7 @@ namespace BogdanM.LocationServices.GoogleMaps
         /// <param name="from">The first geographic point as a <see cref="LatLng"/> structure.</param>
         /// <param name="to">The second geographic point as a <see cref="LatLng"/> structure.</param>
         /// <returns>The distance in meters as an <see cref="Task"/> object.</returns>
-        public async Task<int> GetDistanceAsync(LatLng @from, LatLng to)
+        public override async Task<int> GetDistanceAsync(LatLng @from, LatLng to)
         {
             return await this.GetGoogleMapsDistanceInMetersAsync(@from, to);
         }
@@ -262,7 +235,7 @@ namespace BogdanM.LocationServices.GoogleMaps
         /// <param name="from">The first geographic point as a <see cref="LatLng"/> structure.</param>
         /// <param name="to">The second geographic point as a <see cref="LatLng"/> structure.</param>
         /// <returns>An ordered array of <see cref="LatLng"/> structures represeting the route.</returns>
-        public LatLng[] GetRoute(LatLng @from, LatLng to)
+        public override LatLng[] GetRoute(LatLng @from, LatLng to)
         {
             var fromLatAsString = @from.Lat.ToString("###.###############");
             var fromLngAsString = @from.Lng.ToString("###.###############");
@@ -270,11 +243,11 @@ namespace BogdanM.LocationServices.GoogleMaps
             var toLatAsString = to.Lat.ToString("###.###############");
             var toLngAsString = to.Lng.ToString("###.###############");
 
-            var url = string.Format(CultureInfo.InvariantCulture, this._baseRouteUrl,
+            var url = string.Format(CultureInfo.InvariantCulture, this.BaseRouteUrl,
                 fromLatAsString, fromLngAsString,
-                toLatAsString, toLngAsString);
+                toLatAsString, toLngAsString,
+                this.ApiKey);
 
-            url += "&api_key=" + this._apiKey;
             url = HttpUtility.UrlPathEncode(url).Replace(" ", "%20");
             var request = WebRequest.CreateHttp(url);
             request.Method = "GET";
@@ -315,7 +288,7 @@ namespace BogdanM.LocationServices.GoogleMaps
         /// <param name="from">The first geographic point as a <see cref="LatLng"/> structure.</param>
         /// <param name="to">The second geographic point as a <see cref="LatLng"/> structure.</param>
         /// <returns>An ordered array of <see cref="LatLng"/> structures represeting the route in the result of a <see cref="Task"/> object.</returns>
-        public async Task<LatLng[]> GetRouteAsync(LatLng @from, LatLng to)
+        public override async Task<LatLng[]> GetRouteAsync(LatLng @from, LatLng to)
         {
             var fromLatAsString = @from.Lat.ToString("###.###############");
             var fromLngAsString = @from.Lng.ToString("###.###############");
@@ -323,11 +296,11 @@ namespace BogdanM.LocationServices.GoogleMaps
             var toLatAsString = to.Lat.ToString("###.###############");
             var toLngAsString = to.Lng.ToString("###.###############");
 
-            var url = string.Format(CultureInfo.InvariantCulture, this._baseRouteUrl,
+            var url = string.Format(CultureInfo.InvariantCulture, this.BaseRouteUrl,
                 fromLatAsString, fromLngAsString,
-                toLatAsString, toLngAsString);
+                toLatAsString, toLngAsString,
+                this.ApiKey);
 
-            url += "&api_key=" + this._apiKey;
             url = HttpUtility.UrlPathEncode(url).Replace(" ", "%20");
             var request = WebRequest.CreateHttp(url);
             request.Method = "GET";
@@ -362,25 +335,6 @@ namespace BogdanM.LocationServices.GoogleMaps
             return route.Routes[0].Legs[0].Steps.Select(x => new LatLng(x.EndLocation.Lat, x.EndLocation.Lng)).ToArray();
         }
 
-        /// <summary>
-        /// Returns true if the given point is inside the given geofence and false otherwise.
-        /// </summary>
-        /// <param name="point">The input latitude and longitude as a <see cref="LatLng"/> structure.</param>
-        /// <param name="geoFence">The geofence represented by an array of <see cref="LatLng"/> structurs.</param>
-        /// <returns>True of false regarding if the given point is inside the given geofence.</returns>
-        public bool IsInside(LatLng point, LatLng[] geoFence)
-        {
-            return geoFence.IsPointInside(point);
-        }
-
-        /// <summary>
-        /// Dummy implementation for allowing usage with Owin IdentityFactoryOptions creation.
-        /// </summary>
-        public void Dispose()
-        {
-            //do nothing
-        }
-
         private int GetGoogleMapsDistanceInMeters(LatLng @from, LatLng to, GoogleMapsTravelMode mode = GoogleMapsTravelMode.Driving)
         {
             var fromLatAsString = @from.Lat.ToString("###.###############");
@@ -389,12 +343,12 @@ namespace BogdanM.LocationServices.GoogleMaps
             var toLatAsString = to.Lat.ToString("###.###############");
             var toLngAsString = to.Lng.ToString("###.###############");
 
-            var url = string.Format(CultureInfo.InvariantCulture, this._baseRouteUrl,
+            var url = string.Format(CultureInfo.InvariantCulture, this.BaseRouteUrl,
                 fromLatAsString, fromLngAsString,
                 toLatAsString, toLngAsString,
-                mode.ToString().ToLowerInvariant());
+                mode.ToString().ToLowerInvariant(),
+                this.ApiKey);
 
-            url += "&api_key=" + this._apiKey;
             url = HttpUtility.UrlPathEncode(url).Replace(" ", "%20");
             var request = WebRequest.CreateHttp(url);
             request.Method = "GET";
@@ -437,12 +391,12 @@ namespace BogdanM.LocationServices.GoogleMaps
             var toLatAsString = to.Lat.ToString("###.###############");
             var toLngAsString = to.Lng.ToString("###.###############");
 
-            var url = string.Format(CultureInfo.InvariantCulture, this._baseRouteUrl,
+            var url = string.Format(CultureInfo.InvariantCulture, this.BaseRouteUrl,
                 fromLatAsString, fromLngAsString,
                 toLatAsString, toLngAsString,
-                mode.ToString().ToLowerInvariant());
+                mode.ToString().ToLowerInvariant(),
+                this.ApiKey);
 
-            url += "&api_key=" + this._apiKey;
             url = HttpUtility.UrlPathEncode(url).Replace(" ", "%20");
             var request = WebRequest.CreateHttp(url);
             request.Method = "GET";
