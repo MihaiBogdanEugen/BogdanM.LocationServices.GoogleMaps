@@ -63,7 +63,6 @@
     <Compile Include="Dtos\GoogleMapsTextValue.cs" />
     <Compile Include="Dtos\GoogleMapsTravelMode.cs" />
     <Compile Include="GoogleMapsService.cs" />
-    <Compile Include="Infrastructure\Extensions.cs" />
     <Compile Include="Infrastructure\SnakeCasePropertyNamesContractResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
