@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("BogdanM.LocationServices.GoogleMaps")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Google Maps API wrapper implementation for basic location services operations like geocoding, reverse geocoding, routing and distance.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("BogdanM.LocationServices.GoogleMaps")]
-[assembly: AssemblyCopyright("Copyright ©  2016")]
+[assembly: AssemblyCopyright("Copyright © 2016 Mihai Bogdan Eugen")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
