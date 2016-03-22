@@ -10,6 +10,8 @@ namespace BogdanM.LocationServices.GoogleMaps.Dtos
 
         public string StreetName => this.GetAddressComponent("route");
         public string StreetNo => this.GetAddressComponent("street_number");
+        public string City => this.GetAddressComponent("locality");
+        public string Country => this.GetAddressComponent("country");
 
         public string GetAddressComponent(string type)
         {

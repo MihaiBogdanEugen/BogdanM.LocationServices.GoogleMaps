@@ -161,7 +161,9 @@ namespace BogdanM.LocationServices.GoogleMaps
             return new Address
             {
                 StreetName = geocodingResponse.StreetName,
-                StreetNo = geocodingResponse.StreetNo
+                StreetNo = geocodingResponse.StreetNo,
+                City = geocodingResponse.City,
+                Country = geocodingResponse.Country
             };
         }
 
