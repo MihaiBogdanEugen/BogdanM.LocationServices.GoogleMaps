@@ -389,7 +389,8 @@ namespace BogdanM.LocationServices.GoogleMaps
             if (route == null || route.Status.ToLowerInvariant() != "ok" || route.Routes.Length == 0 || route.Routes[0].Legs == null || route.Routes[0].Legs.Length == 0)
                 return 0;
 
-            return route.Routes[0].Legs[0].Distance.Value;
+            var distance = route.Routes[0].Legs[0].Distance;
+            return string.IsNullOrEmpty(distance?.Text) ? 0 : distance.Value;
         }
 
         private async Task<int> GetGoogleMapsDistanceInMetersAsync(LatLng @from, LatLng to, GoogleMapsTravelMode mode = GoogleMapsTravelMode.Driving)
@@ -438,16 +439,7 @@ namespace BogdanM.LocationServices.GoogleMaps
                 return 0;
 
             var distance = route.Routes[0].Legs[0].Distance;
-            if (string.IsNullOrEmpty(distance?.Text))
-                return 0;
-
-            var distanceAsText = distance.Text;
-            var parts = distanceAsText.Split(new char[' '], StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length != 2)
-                return 0;
-
-            double miles;
-            return double.TryParse(distanceAsText, NumberStyles.AllowDecimalPoint, NumberFormatInfo.InvariantInfo, out miles) ? (int)Math.Ceiling(1609.34 * miles) : 0;
+            return string.IsNullOrEmpty(distance?.Text) ? 0 : distance.Value;
         }
     }
 }
